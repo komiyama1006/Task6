@@ -1,4 +1,4 @@
-<div class="container"> 
+<div class="container">
 	<div class="row">
 		<div class="col-xs-3">
 
@@ -6,7 +6,7 @@
 			<%= render 'users/profile', user: @user, name: current_user.name %>
 
 			<h2>New book</h2>
-			<%= render 'books/newform' %>
+			<%= render 'books/newform', book: Book.new %>
 
 		</div>
 
@@ -25,6 +25,31 @@
 
 						<td><%= @book.body %></td>
 
+						<!-- 下記は、いいね機能 -->
+
+						<td>
+							<% if @book.favorited_by?(current_user) %>
+							<ul>
+								<%= link_to book_favorites_path(@book), method: :delete do %>
+								<i class="fa fa-heart"></i>
+									<%= @book.favorites.count %>
+								<% end %>
+							</ul>
+							<% else %>
+							<ul>
+								<%= link_to book_favorites_path(@book),method: :post do %>
+								<i class="far fa-heart"></i>
+									<%= @book.favorites.count %>
+								<% end %>
+							</ul>
+							<% end %>
+						</td>
+
+						<!-- 下記は、コメント表示 -->
+						<td>
+							<%= "コメント数：" %><%= @book.book_comments.count %>
+						</td>
+
 						<% if @book.user_id == current_user.id %>
 
 							<td><%= link_to "Edit",edit_book_path(@book.id), class: "btn-sm btn-success edit_book_#{@book.id}" %></td>
@@ -33,6 +58,30 @@
 					</tr>
 					<% end %>
 				</table>
+
+				<!-- 下記、コメント入力機能 -->
+				<%= form_for [@book, @book_comment] do |f| %>
+					<%= f.text_area :comment, row:'5', class:"form-control", placeholder: "コメントを記載してください。" %>
+					<%= f.submit "送信" %>
+				<% end %>
+
+				<% @book_comments.each do |c| %>
+					<table class="table">
+						<tr>
+							<td><%= c.comment %></td>
+
+							<% if c.user_id == current_user.id %>
+
+								<td>
+									<!-- 下記は、book_book_comments_pathなので、(親)@book, (子)@book_commentと指定しないといけない -->
+									<%= link_to "Destroy",book_book_comments_path(@book, @book_comment), method: :delete %>
+								</td>
+
+							<% end %>
+
+						</tr>
+					</table>
+				<% end %>
 		</div>
 	</div>
 </div>

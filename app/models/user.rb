@@ -5,6 +5,11 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :trackable,:validatable
 
   has_many :books, dependent: :destroy
+  # 下記は、コメント機能のため追加
+  has_many :book_comments, dependent: :destroy
+  # 下記は、いいね機能のため追加
+  has_many :favorites, dependent: :destroy
+
   attachment :profile_image
 
   #バリデーションは該当するモデルに設定する。エラーにする条件を設定できる。
